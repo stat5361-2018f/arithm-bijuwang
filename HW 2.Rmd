@@ -1,0 +1,58 @@
+---
+title: "Monte Carlo Methods and Computer Arithmetics"
+subtitle: "HW 2 of STAT 5361 Statistical Computing"
+author: Biju Wang^[<bijuwang@uconn.edu>]
+date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+output: 
+  pdf_document:
+    number_sections: true
+
+abstract: Use Monte Carlo Methods to approch $\Phi(t)$ and explain some computer arithmetics.
+keywords: Monte Carlo, Arithmetics
+---
+
+# Monte Carlo Methods
+## Principles
+The CDF of standard norm distribution is
+\begin{equation}
+\Phi(t) = \int^{t}_{-\infty}\frac{1}{\sqrt{2\pi}}e^{-y^{2}/2}dy
+\end{equation}
+by the Monte Carlo methods
+\begin{equation}
+\hat{\Phi}(t)=\frac{1}{n}\sum^{n}_{i=1}I(X_{i}\leq t)
+\end{equation}
+where $X_{i}$'s are iid $N(0, 1)$ variables.
+
+## Approximation Outcomes
+The approximation is implemented at $n\in \{10^{2}, 10^{3}, 10^{4}\}$ at $t\in\{0.0, 0.67, 0.84, 1.28, 1.65, 2.32, 2.58, 3.09, 3.72\}$. The outcome table with true values is shown below.
+
+First Header  | Second Header
+------------- | -------------
+Content Cell  | Content Cell
+Content Cell  | Content Cell
+Table: Approximation Outcomes with True Values
+
+
+
+
+# Computer Arithmetics
+
+
+
+This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
+
+When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
+
+```{r cars}
+summary(cars)
+```
+
+## Including Plots
+
+You can also embed plots, for example:
+
+```{r pressure, echo=FALSE}
+plot(pressure)
+```
+
+Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
