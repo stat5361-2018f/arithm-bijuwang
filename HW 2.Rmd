@@ -3,10 +3,13 @@ title: "Monte Carlo Methods and Computer Arithmetics"
 subtitle: "HW 2 of STAT 5361 Statistical Computing"
 author: Biju Wang^[<bijuwang@uconn.edu>]
 date: "`r format(Sys.Date(), '%m/%d/%Y')`"
+header-includes: 
+  \usepackage{float}
+  \floatplacement{figure}{H}
 output: 
   pdf_document:
     number_sections: true
-
+    
 abstract: Use Monte Carlo Methods to approch $\Phi(t)$ and explain some computer arithmetics.
 keywords: Monte Carlo, Arithmetics
 ---
@@ -26,33 +29,73 @@ where $X_{i}$'s are iid $N(0, 1)$ variables.
 ## Approximation Outcomes
 The approximation is implemented at $n\in \{10^{2}, 10^{3}, 10^{4}\}$ at $t\in\{0.0, 0.67, 0.84, 1.28, 1.65, 2.32, 2.58, 3.09, 3.72\}$. The outcome table with true values is shown below.
 
-First Header  | Second Header
-------------- | -------------
-Content Cell  | Content Cell
-Content Cell  | Content Cell
+$\hat{\Phi}(t)$|$t=0.0$|$t=0.67$|$t=0.84$|$t=1.28$|$t=1.65$|$t=2.32$|$t=2.58$|$t=3.09$|$t=3.72$|
+:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|:---:|
+$n=10^{2}$|0.4600|0.7400|0.8200|0.9100|0.9700|0.9900|1.0000|1.0000|1.0000|
+$n=10^{3}$|0.5210|0.7390|0.7940|0.8920|0.9360|0.9900|0.9960|0.9990|0.9990|
+$n=10^{4}$|0.5056|0.7496|0.7937|0.8967|0.9521|0.9910|0.9960|0.9994|1.0000|
+$\Phi(t)$ |0.5000|0.7486|0.7995|0.8997|0.9505|0.9898|0.9951|0.9990|0.9999|
 Table: Approximation Outcomes with True Values
 
+```{r}
+n <- c(10^2, 10^3, 10^4)
+t <- c(0.0, 0.67, 0.84, 1.28, 1.65, 2.32, 2.58, 3.09, 3.72)
+truth <- pnorm(t)
 
+table <- matrix(NA, 3, 9)
+
+set.seed(1)
+sample <- list()
+for (i in 1:length(n)) {
+  sample[[i]] <- rnorm(n[i])
+}
+
+for (i in 1:length(n)) {
+  for (j in 1:length(t)) {
+    table[i, j] <- sum(sample[[i]] <= t[j])/n[i]
+  }
+}
+
+```
+
+## Box Plots of the Bias
+For each $n$ and $t$, we have $\hat{\Phi}(t)$ and the true value $\Phi(t)$, then we can calculate the bias. We repeat the experiments $100$ times and will obtain $100$ biases. Thus box plots can be drawn.
+
+```{r, echo = FALSE, fig.height = 5.8, fig.cap = "Side-by-Side Boxplots of Bias at all $t$ for Different $n$"}
+library("ggplot2")
+library("reshape")
+library("gridExtra")
+
+bias1 <- matrix(NA, 100, 9)
+bias2 <- matrix(NA, 100, 9)
+bias3 <- matrix(NA, 100, 9)
+
+for (i in 1:100) {
+  set.seed(i)
+  for (j in 1:length(t)) {
+    bias1[i, j] <- sum(rnorm(10^2) <= t[j])/10^2 - truth[j]
+    bias2[i, j] <- sum(rnorm(10^3) <= t[j])/10^3 - truth[j]
+    bias3[i, j] <- sum(rnorm(10^4) <= t[j])/10^4 - truth[j]
+  }
+}
+
+bias1 <- as.data.frame(bias1)
+bias2 <- as.data.frame(bias2)
+bias3 <- as.data.frame(bias3)
+colnames(bias1) <- c("t=0.0", "t=0.67", "t=0.84", "t=1.28", "t=1.65", "t=2.32", "t=2.58", "t=3.09", "t=3.72")
+colnames(bias2) <- c("t=0.0", "t=0.67", "t=0.84", "t=1.28", "t=1.65", "t=2.32", "t=2.58", "t=3.09", "t=3.72")
+colnames(bias3) <- c("t=0.0", "t=0.67", "t=0.84", "t=1.28", "t=1.65", "t=2.32", "t=2.58", "t=3.09", "t=3.72")
+
+bias1_melt <- melt(bias1)
+bias2_melt <- melt(bias2)
+bias3_melt <- melt(bias3)
+
+p1 <- ggplot(bias1_melt, aes(x = factor(variable), y = value)) + geom_boxplot() + labs(x = expression("Values of"~t), y = "Bias") + theme(plot.title = element_text(hjust = 0.5)) + ggtitle(expression("Side-by-Side Boxplots of Bias at All"~t~"for"~n == 10^2))
+p2 <- ggplot(bias2_melt, aes(x = factor(variable), y = value)) + geom_boxplot() + labs(x = expression("Values of"~t), y = "Bias") + theme(plot.title = element_text(hjust = 0.5)) + ggtitle(expression("Side-by-Side Boxplots of Bias at All"~t~"for"~n == 10^3))
+p3 <- ggplot(bias3_melt, aes(x = factor(variable), y = value)) + geom_boxplot() + labs(x = expression("Values of"~t), y = "Bias") + theme(plot.title = element_text(hjust = 0.5)) + ggtitle(expression("Side-by-Side Boxplots of Bias at All"~t~"for"~n == 10^4))
+grid.arrange(p1, p2, p3, nrow = 3)
+```
 
 
 # Computer Arithmetics
 
-
-
-This is an R Markdown document. Markdown is a simple formatting syntax for authoring HTML, PDF, and MS Word documents. For more details on using R Markdown see <http://rmarkdown.rstudio.com>.
-
-When you click the **Knit** button a document will be generated that includes both content as well as the output of any embedded R code chunks within the document. You can embed an R code chunk like this:
-
-```{r cars}
-summary(cars)
-```
-
-## Including Plots
-
-You can also embed plots, for example:
-
-```{r pressure, echo=FALSE}
-plot(pressure)
-```
-
-Note that the `echo = FALSE` parameter was added to the code chunk to prevent printing of the R code that generated the plot.
