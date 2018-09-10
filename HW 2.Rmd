@@ -98,4 +98,54 @@ grid.arrange(p1, p2, p3, nrow = 3)
 
 
 # Computer Arithmetics
+## .Machine$double.xmax
+
+The value of .Machine$double.xmax is
+```{r}
+options(digits = 20)
+.Machine$double.xmax
+```
+It can also be calculated by
+```{r}
+u <- 0
+for (i in 1L:53) u <- u + 2^(-i)
+u * 2 * 2 ^ 1023
+```
+Thus, it is defined by setting sign bit to $1$, significand to $\sum^{53}_{i=1}2^{-i}$, exponent to $1024$.
+
+## .Machine$double.xmin
+
+The value of .Machine$double.xmin is
+```{r}
+.Machine$double.xmin
+```
+It can also be calculated by
+```{r}
+2 ^ (-1022)
+```
+Thus, it is the smallest non-zero normalized floating-point number, a power of the radix.
+
+## .Machine$double.eps
+
+The value of .Machine$double.eps is
+```{r}
+.Machine$double.eps
+```
+It can also be calculated by
+```{r}
+2 ^ (-52)
+```
+Thus, it is the smallest positive floating-point number $x$ such that $1 + x~!= 1$.
+
+## .Machine$double.neg.eps
+
+The value of .Machine$double.neg.eps is
+```{r}
+.Machine$double.neg.eps
+```
+It can also be calculated by
+```{r}
+2 ^ (-53)
+```
+Thus, it is the smallest positive floating-point number $x$ such that $1 - x~!= 1$.
 
